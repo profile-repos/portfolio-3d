@@ -89,7 +89,7 @@ export const Projects = ({ profile }: ProjectsProps) => {
       scale: 1,
       transition: {
         duration: 0.5,
-        ease: [0.25, 0.46, 0.45, 0.94],
+        ease: [0.25, 0.46, 0.45, 0.94] as const,
       },
     },
   };
@@ -137,7 +137,7 @@ export const Projects = ({ profile }: ProjectsProps) => {
             initial="hidden"
             animate={(sectionVisible && shouldAnimate) ? "visible" : "hidden"}
           >
-            {currentProjects.length > 0 ? currentProjects.map((project, idx) => {
+            {currentProjects.length > 0 ? currentProjects.map((project) => {
               return (
                 <motion.div 
                   key={project.id}

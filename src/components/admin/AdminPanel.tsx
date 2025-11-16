@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
@@ -9,14 +8,12 @@ import {
   Code, 
   Link, 
   Settings,
-  X,
   Menu,
   LogOut,
   ChevronLeft,
   ChevronRight,
   RefreshCw,
   Bell,
-  Search,
   BookOpen
 } from "lucide-react";
 import ProfileTab from "./ProfileTab";
@@ -38,7 +35,7 @@ const AdminPanel = ({ isOpen, onClose }: AdminPanelProps) => {
   const [loading, setLoading] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [notifications, setNotifications] = useState([
+  const [notifications] = useState([
     { id: 1, message: "Profile updated successfully", type: "success", time: "2 min ago" },
     { id: 2, message: "New project added", type: "info", time: "1 hour ago" }
   ]);

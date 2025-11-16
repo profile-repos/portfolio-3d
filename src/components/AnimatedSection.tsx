@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { useScrollAnimation } from '@/hooks/use-scroll-animation';
 
 interface AnimatedSectionProps {

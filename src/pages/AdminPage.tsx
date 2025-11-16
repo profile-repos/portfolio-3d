@@ -4,7 +4,7 @@ import AdminPanel from "@/components/admin/AdminPanel";
 import AdminLogin from "@/components/AdminLogin";
 
 const AdminPage = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [_isAuthenticated, setIsAuthenticated] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -22,7 +22,7 @@ const AdminPage = () => {
     checkAuth();
   }, []);
 
-  const handleLogin = (token: string) => {
+  const handleLogin = (_token: string) => {
     setIsAuthenticated(true);
     setShowLogin(false);
   };

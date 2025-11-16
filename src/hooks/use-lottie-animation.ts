@@ -1,5 +1,4 @@
 import { useEffect, useRef } from 'react';
-import type { ProfileData } from '@/services/api';
 
 export const useLottieAnimation = (profilePhoto: string | null | undefined) => {
   const lottieContainerRef = useRef<HTMLDivElement>(null);

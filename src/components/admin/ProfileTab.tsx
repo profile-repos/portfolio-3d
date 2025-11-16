@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Edit, Save, X, User, Mail, MapPin, Calendar, CheckCircle, AlertCircle, Upload, Camera, Link, Image, Play } from "lucide-react";
+import { Edit, Save, X, User, Mail, Calendar, CheckCircle, AlertCircle, Upload, Camera, Image, Play } from "lucide-react";
 import Lottie from "@/components/ui/lottie";
 import { API_BASE_URL } from "@/config/api";
 

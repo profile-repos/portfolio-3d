@@ -10,7 +10,7 @@ interface SkillsTabProps {
   onDataUpdate: () => void;
 }
 
-const SkillsTab = ({ data, onDataUpdate }: SkillsTabProps) => {
+const SkillsTab = ({ data: _data, onDataUpdate: _onDataUpdate }: SkillsTabProps) => {
   const [isEditing, setIsEditing] = useState<string | null>(null);
   const [formData, setFormData] = useState<any>({});
   const [loading, setLoading] = useState(false);

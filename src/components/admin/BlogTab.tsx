@@ -6,8 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { 
-  Edit, Save, X, Plus, Trash2, Eye, Calendar, Clock, User, 
-  CheckCircle, AlertCircle, Upload, BookOpen, Tag,   Star
+  Edit, Save, X, Plus, Trash2, Eye, Calendar, Clock, 
+  CheckCircle, AlertCircle, Upload, BookOpen, Star
 } from "lucide-react";
 import { API_BASE_URL } from "@/config/api";
 
@@ -33,7 +33,7 @@ interface BlogTabProps {
   onDataUpdate: () => void;
 }
 
-const BlogTab = ({ data, onDataUpdate }: BlogTabProps) => {
+const BlogTab = ({ data: _data, onDataUpdate: _onDataUpdate }: BlogTabProps) => {
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
@@ -271,7 +271,7 @@ const BlogTab = ({ data, onDataUpdate }: BlogTabProps) => {
       if (response.ok) {
         const data = await response.json();
         console.log('Upload response data:', data); // Debug log
-        setFormData(prev => ({ ...prev, featured_image: data.cloudinary_url }));
+        setFormData((prev: any) => ({ ...prev, featured_image: data.cloudinary_url }));
         setSelectedFile(null);
         setPreviewUrl(null);
         setSuccessMessage("Featured image uploaded successfully!");
@@ -291,7 +291,7 @@ const BlogTab = ({ data, onDataUpdate }: BlogTabProps) => {
 
   const handleTagChange = (value: string) => {
     const tags = value.split(',').map(tag => tag.trim()).filter(tag => tag);
-    setFormData(prev => ({ ...prev, tags }));
+    setFormData((prev: any) => ({ ...prev, tags }));
   };
 
   const formatDate = (dateString: string) => {

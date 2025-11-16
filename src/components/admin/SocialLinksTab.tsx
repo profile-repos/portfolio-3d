@@ -317,7 +317,7 @@ const SocialLinksTab = ({ data, onDataUpdate }: SocialLinksTabProps) => {
         </motion.div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {socialLinks.map((link: any, index: number) => {
+          {socialLinks.map((link: any) => {
             const IconComponent = getPlatformIcon(link.platform);
             return (
               <motion.div

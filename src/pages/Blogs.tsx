@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { Search, Calendar, Clock, Eye, ArrowRight, BookOpen, Star, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, Calendar, Clock, Eye, ArrowRight, Star, ChevronLeft, ChevronRight } from 'lucide-react';
 import { AnimatedBackground } from '@/components/AnimatedBackground';
 import type { BlogPost } from '@/types';
 import { formatBlogDate } from '@/utils/helpers';
