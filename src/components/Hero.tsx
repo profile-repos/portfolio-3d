@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useLottieAnimation } from '@/hooks/use-lottie-animation';
 import { getInitials } from '@/utils/helpers';
 import { socialIcons } from '@/types';
+import { API_BASE_URL } from '@/config/api';
 import type { ProfileData } from '@/services/api';
 
 interface HeroProps {
@@ -13,7 +14,14 @@ interface HeroProps {
 
 const Hero = ({ profile, mousePosition }: HeroProps) => {
   const [showPopup, setShowPopup] = useState(false);
-  const lottieContainerRef = useLottieAnimation(profile.user.profile_photo);
+  const isLottie = Boolean(
+    profile.user.profile_photo &&
+    (profile.user.profile_photo.includes('lottie.host') || profile.user.profile_photo.includes('.lottie'))
+  );
+  const lottieContainerRef = useLottieAnimation(isLottie ? profile.user.profile_photo : null);
+  const photoUrl = profile.user.profile_photo
+    ? (profile.user.profile_photo.startsWith('http') ? profile.user.profile_photo : `${API_BASE_URL}${profile.user.profile_photo}`)
+    : null;
   
   // Filter active social links
   const activeSocialLinks = profile.social_links?.filter(link => link.is_active) || [];
@@ -39,10 +47,17 @@ const Hero = ({ profile, mousePosition }: HeroProps) => {
         >
           <div className="w-48 h-48 md:w-64 md:h-64 lg:w-80 lg:h-80 xl:w-96 xl:h-96 mx-auto rounded-full bg-gradient-to-br from-slate-600 via-gray-500 to-slate-700 p-1 shadow-2xl shadow-slate-500/50 overflow-hidden transition-all duration-300" style={{ boxShadow: '0 0 40px rgba(148, 163, 184, 0.3)' }}>
             <div 
-              ref={lottieContainerRef}
               className="w-full h-full rounded-full bg-gray-900 flex items-center justify-center overflow-hidden relative"
             >
-              {!profile.user.profile_photo && (
+              {isLottie ? (
+                <div ref={lottieContainerRef} className="w-full h-full" />
+              ) : photoUrl ? (
+                <img 
+                  src={photoUrl} 
+                  alt={`${profile.user.first_name} ${profile.user.last_name}`}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
                 <div 
                   className="text-6xl md:text-7xl lg:text-8xl font-bold w-full h-full flex items-center justify-center relative"
                   style={{ 
