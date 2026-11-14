@@ -271,7 +271,7 @@ const BlogTab = ({ data: _data, onDataUpdate: _onDataUpdate }: BlogTabProps) => 
       if (response.ok) {
         const data = await response.json();
         console.log('Upload response data:', data); // Debug log
-        setFormData((prev: any) => ({ ...prev, featured_image: data.cloudinary_url }));
+        setFormData((prev: any) => ({ ...prev, featured_image: data.url || data.cloudinary_url }));
         setSelectedFile(null);
         setPreviewUrl(null);
         setSuccessMessage("Featured image uploaded successfully!");

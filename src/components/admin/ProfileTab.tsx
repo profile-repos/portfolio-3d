@@ -27,8 +27,10 @@ const ProfileTab = ({ data, onDataUpdate }: ProfileTabProps) => {
   const [lottieUrl, setLottieUrl] = useState('');
   const [savingLottie, setSavingLottie] = useState(false);
 
-  // Determine if current profile_photo is a Cloudinary URL or Lottie URL
-  const isCurrentCloudinaryUrl = data?.user?.profile_photo?.startsWith('https://res.cloudinary.com');
+  // Determine if current profile_photo is a hosted image URL or Lottie URL
+  const isCurrentHostedPhotoUrl = data?.user?.profile_photo?.startsWith('http') && 
+                                 !(data?.user?.profile_photo?.includes('.lottie') || 
+                                   data?.user?.profile_photo?.includes('lottie.host'));
   const isCurrentLottieUrl = data?.user?.profile_photo?.startsWith('http') && 
                             (data?.user?.profile_photo?.includes('.lottie') || 
                              data?.user?.profile_photo?.includes('lottie.host'));
@@ -325,7 +327,7 @@ const ProfileTab = ({ data, onDataUpdate }: ProfileTabProps) => {
                       autoplay
                     />
                   </div>
-                ) : isCurrentCloudinaryUrl ? (
+                ) : isCurrentHostedPhotoUrl ? (
                   <img 
                     src={data.user.profile_photo} 
                     alt="Profile" 
@@ -333,7 +335,7 @@ const ProfileTab = ({ data, onDataUpdate }: ProfileTabProps) => {
                   />
                 ) : data.user?.profile_photo ? (
                   <img 
-                    src={`${API_BASE_URL}${data.user.profile_photo}`} 
+                    src={data.user.profile_photo.startsWith('http') ? data.user.profile_photo : `${API_BASE_URL}${data.user.profile_photo}`} 
                     alt="Profile" 
                     className="w-full h-full object-cover"
                   />
@@ -345,7 +347,7 @@ const ProfileTab = ({ data, onDataUpdate }: ProfileTabProps) => {
               </div>
               <div className="mt-2 text-center">
                 <Badge variant="secondary" className="text-xs">
-                  {isCurrentLottieUrl ? 'Lottie Animation' : isCurrentCloudinaryUrl ? 'Cloudinary Photo' : 'Photo'}
+                  {isCurrentLottieUrl ? 'Lottie Animation' : isCurrentHostedPhotoUrl ? 'Photo' : 'Photo'}
                 </Badge>
               </div>
             </div>
