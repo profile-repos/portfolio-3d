@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { 
   Edit, Save, X, Plus, Trash2, Eye, Calendar, Clock, 
-  CheckCircle, AlertCircle, Upload, BookOpen, Star
+  CheckCircle, AlertCircle, BookOpen, Star
 } from "lucide-react";
 import { API_BASE_URL } from "@/config/api";
 
@@ -225,65 +225,63 @@ const BlogTab = ({ data: _data, onDataUpdate: _onDataUpdate }: BlogTabProps) => 
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        setErrors({ image: 'File size must be less than 5MB' });
-        return;
-      }
-      
-      if (!file.type.startsWith('image/')) {
-        setErrors({ image: 'Please select an image file' });
-        return;
-      }
-      
-      setSelectedFile(file);
-      setErrors({ image: '' });
-      
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setPreviewUrl(e.target?.result as string);
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      setErrors((prev: any) => ({ ...prev, image: 'File size must be less than 5MB' }));
+      return;
     }
+
+    if (!file.type.startsWith('image/')) {
+      setErrors((prev: any) => ({ ...prev, image: 'Please select an image file' }));
+      return;
+    }
+
+    setErrors((prev: any) => ({ ...prev, image: '' }));
+
+    // Read as base64 data URI, then auto-upload immediately
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const dataUri = e.target?.result as string;
+      setPreviewUrl(dataUri);
+      handleImageUpload(file, dataUri);
+    };
+    reader.readAsDataURL(file);
   };
 
-  const handleImageUpload = async () => {
-    if (!selectedFile) return;
+  const handleImageUpload = async (file?: File, dataUri?: string) => {
+    const uploadFile = file || selectedFile;
+    const uploadDataUri = dataUri || previewUrl;
+    if (!uploadFile || !uploadDataUri) return;
 
     setUploadingImage(true);
     try {
-      const formData = new FormData();
-      formData.append('featured_image', selectedFile);
-
-      console.log('Uploading image:', selectedFile.name); // Debug log
-      console.log('Upload URL:', `${API_BASE_URL}/api/blogs/upload-image/`); // Debug log
-
       const response = await fetch(`${API_BASE_URL}/api/blogs/upload-image/`, {
         method: 'POST',
         headers: {
+          'Content-Type': 'application/json',
           'Authorization': `Token ${localStorage.getItem('admin_token')}`
         },
-        body: formData
+        body: JSON.stringify({
+          image: uploadDataUri,          // base64 data URI (data:image/...;base64,...)
+          filename: uploadFile.name,
+          folder: 'blogs'
+        })
       });
-
-      console.log('Upload response status:', response.status); // Debug log
 
       if (response.ok) {
         const data = await response.json();
-        console.log('Upload response data:', data); // Debug log
         setFormData((prev: any) => ({ ...prev, featured_image: data.url || data.cloudinary_url }));
         setSelectedFile(null);
         setPreviewUrl(null);
-        setSuccessMessage("Featured image uploaded successfully!");
+        setSuccessMessage("Featured image uploaded to S3 successfully!");
         setTimeout(() => setSuccessMessage(""), 3000);
       } else {
         const errorData = await response.json();
-        console.log('Upload error data:', errorData); // Debug log
-        setErrors({ image: errorData.error || 'Failed to upload image' });
+        setErrors((prev: any) => ({ ...prev, image: errorData.error || errorData.message || 'Failed to upload image' }));
       }
     } catch (error) {
-      console.log('Upload network error:', error); // Debug log
-      setErrors({ image: 'Network error. Please try again.' });
+      setErrors((prev: any) => ({ ...prev, image: 'Network error uploading image. Please try again.' }));
     } finally {
       setUploadingImage(false);
     }
@@ -529,35 +527,38 @@ const BlogTab = ({ data: _data, onDataUpdate: _onDataUpdate }: BlogTabProps) => 
                       type="file"
                       accept="image/*"
                       onChange={handleFileSelect}
+                      disabled={uploadingImage}
                       className="flex-1 text-gray-900 bg-white border-gray-300 focus:border-blue-500 transition-all duration-200"
                     />
-                    {selectedFile && (
-                      <Button
-                        onClick={handleImageUpload}
-                        disabled={uploadingImage}
-                        size="sm"
-                        className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-                      >
-                        <Upload className="w-4 h-4 mr-2" />
-                        {uploadingImage ? 'Uploading...' : 'Upload'}
-                      </Button>
+                    {uploadingImage && (
+                      <div className="flex items-center gap-2 text-sm text-purple-600 font-medium">
+                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-purple-300 border-t-purple-600" />
+                        Uploading to S3...
+                      </div>
                     )}
                   </div>
                   {errors.image && (
                     <p className="text-red-500 text-sm mt-1">{errors.image}</p>
                   )}
-                  
-                  {/* Image Preview */}
+
+                  {/* Image Preview — shows local preview while uploading, then the S3 URL after */}
                   {(previewUrl || formData.featured_image) && (
                     <div className="mt-3">
-                      <p className="text-sm font-medium text-gray-700 mb-2">Preview:</p>
+                      <p className="text-sm font-medium text-gray-700 mb-2">
+                        {previewUrl ? 'Uploading preview:' : 'Current image (S3):'}
+                      </p>
                       <div className="w-32 h-24 rounded-lg overflow-hidden border-2 border-gray-300 shadow-sm">
-                        <img 
-                          src={previewUrl || formData.featured_image} 
-                          alt="Preview" 
+                        <img
+                          src={previewUrl || formData.featured_image}
+                          alt="Preview"
                           className="w-full h-full object-cover"
                         />
                       </div>
+                      {formData.featured_image && !previewUrl && (
+                        <p className="text-xs text-green-600 mt-1 flex items-center gap-1">
+                          <CheckCircle className="w-3 h-3" /> Uploaded to S3
+                        </p>
+                      )}
                     </div>
                   )}
                 </div>
